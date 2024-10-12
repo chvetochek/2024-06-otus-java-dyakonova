@@ -38,6 +38,10 @@ public class Atm {
         }
 
         var result = exchange(money);
+        if (result.isEmpty()) {
+            System.out.println("Сумма не может быть выдана, нет размена");
+            return;
+        }
         System.out.println("Выдано:");
         for (var entry : result.entrySet()) {
             System.out.println(entry.getKey().toString() + " - " + entry.getValue() + "  шт.");

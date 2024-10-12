@@ -13,7 +13,7 @@ public class HelloOtus {
         money.put(Denomination.RUB100, 1);
         money.put(Denomination.RUB500, 3);
         atm.add(money);
-        atm.dispense(1100);
+        atm.dispense(200);
         atm.printBalance();
     }
 }
