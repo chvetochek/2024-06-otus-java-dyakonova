@@ -1,0 +1,17 @@
+256MB: spend msec:55368, sec:55
+1gb: spend msec:54922, sec:54
+2gb: spend msec:49832, sec:49
+4gb: spend msec:43785, sec:43
+8gb: spend msec:36714, sec:36
+10gb: spend msec:28380, sec:28
+12gb: spend msec:37753, sec:37
+
+Заменила Integer на int (в примитивных типах объем занимаемой памяти заранее известен)
+256MB: spend msec:22634, sec:22
+1gb: spend msec:21496, sec:21
+2gb: spend msec:17399, sec:17
+4gb: spend msec:21433, sec:21
+8gb: spend msec:20632, sec:20
+10gb: spend msec:21871, sec:21
+12gb: spend msec:21507, sec:21
+
