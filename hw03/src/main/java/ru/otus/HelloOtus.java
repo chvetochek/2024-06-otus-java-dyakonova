@@ -7,8 +7,11 @@ import ru.otus.annotations.After;
 import ru.otus.annotations.Before;
 import ru.otus.annotations.Test;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("java:S106")
 public class HelloOtus {
@@ -19,54 +22,55 @@ public class HelloOtus {
     public static void run(String className) {
         try {
             var clazz = Class.forName(className);
-            var allMethods = clazz.getDeclaredMethods();
-            var constructor = clazz.getConstructor();
-            var object = constructor.newInstance();
-            var beforeMethods = new ArrayList<Method>();
-            var testMethods = new ArrayList<Method>();
-            var afterMethods = new ArrayList<Method>();
-            for (var method : allMethods) {
-                if (method.getDeclaredAnnotation(Before.class) != null) {
-                    beforeMethods.add(method);
-                }
-                if (method.getDeclaredAnnotation(Test.class) != null) {
-                    testMethods.add(method);
-                }
-                if (method.getDeclaredAnnotation(After.class) != null) {
-                    afterMethods.add(method);
-                }
-            }
 
-            for (var beforeMethod : beforeMethods) {
-                beforeMethod.invoke(object);
-            }
+            var beforeMethods = getAnnotatedMethods(clazz, Before.class);
+            var testMethods = getAnnotatedMethods(clazz, Test.class);
+            var afterMethods = getAnnotatedMethods(clazz, After.class);
 
-            var totalTestCount = testMethods.size();
-            var passedTestsCount = 0;
-            var failedTestsCount = 0;
             for (var testMethod : testMethods) {
-                try {
-                    testMethod.invoke(object);
-                    passedTestsCount ++;
-                } catch (Exception e) {
-                    failedTestsCount ++;
-                }
+                runTest(clazz, beforeMethods, testMethod, afterMethods);
             }
+            TestResults.totalTestCount = testMethods.size();
 
-            for (var afterMethod : afterMethods) {
-                afterMethod.invoke(object);
-            }
-
-            printReport(totalTestCount, passedTestsCount, failedTestsCount);
+            printReport();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    private static void printReport(int totalTestCount, int passedTestsCount, int failedTestsCount) {
-        System.out.println("Всего тестов: "  + totalTestCount);
-        System.out.println("Успешных тестов: "  + passedTestsCount);
-        System.out.println("Неуспешных тестов: " + failedTestsCount);
+    private static void runTest(Class<?> clazz, List<Method> beforeMethods, Method testMethod, List<Method> afterMethods) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        var constructor = clazz.getConstructor();
+        var object = constructor.newInstance();
+        for (var beforeMethod : beforeMethods) {
+            beforeMethod.invoke(object);
+        }
+
+        try {
+            testMethod.invoke(object);
+            TestResults.passedTestsCount++;
+        } catch (Exception e) {
+            TestResults.failedTestsCount++;
+        }
+
+        for (var afterMethod : afterMethods) {
+            afterMethod.invoke(object);
+        }
+    }
+
+    private static List<Method> getAnnotatedMethods(Class<?> clazz, Class<? extends Annotation> annotationClass) {
+        var methods = new ArrayList<Method>();
+        for (var method : clazz.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(annotationClass)) {
+                methods.add(method);
+            }
+        }
+        return methods;
+    }
+
+    private static void printReport() {
+        System.out.println("Всего тестов: " + TestResults.totalTestCount);
+        System.out.println("Успешных тестов: " + TestResults.passedTestsCount);
+        System.out.println("Неуспешных тестов: " + TestResults.failedTestsCount);
     }
 }
