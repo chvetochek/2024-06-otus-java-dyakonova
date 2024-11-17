@@ -10,5 +10,6 @@ public class HelloOtus5 {
         myClass.calculation(1);
         myClass.calculation(2, 3);
         myClass.calculation(4, 5, "Цифра6");
+        myClass.calculation(7, 8, "Нет логгирования");
     }
 }

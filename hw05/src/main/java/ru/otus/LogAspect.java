@@ -22,7 +22,9 @@ public class LogAspect {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            System.out.println("executed method:" + method.getName() + ", params: " + Arrays.asList(args));
+            if (myClass.getClass().getDeclaredMethod(method.getName(), method.getParameterTypes()).isAnnotationPresent(Log.class)) {
+                System.out.println("executed method:" + method.getName() + ", params: " + Arrays.asList(args));
+            }
             return method.invoke(myClass, args);
         }
 
