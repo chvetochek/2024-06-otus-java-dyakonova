@@ -1,7 +1,6 @@
 package ru.otus.handler;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import ru.otus.listener.Listener;
 import ru.otus.model.Message;
 import ru.otus.processor.Processor;
+import ru.otus.processor.ProcessorExceptional;
 
 class ComplexProcessorTest {
 
@@ -98,22 +98,18 @@ class ComplexProcessorTest {
         // given
         var message = new Message.Builder(1L).field8("field8").build();
 
-        var processor1 = mock(Processor.class);
-        when(processor1.process(message)).thenReturn(message);
+        Processor processor1 = new ProcessorExceptional();
 
         var processors = List.of(processor1);
 
         var complexProcessor = new ComplexProcessor(processors, ex -> {
             throw new TestException(ex.getMessage());
         });
+
         if (System.currentTimeMillis()/1000 % 2 != 0) {
             TimeUnit.SECONDS.sleep(1);
         }
-        // when
-        complexProcessor.handle(message);
-
-        // then
-        verify(processor1, never()).process(message);
+        assertThatExceptionOfType(TestException.class).isThrownBy(() -> complexProcessor.handle(message));
     }
 
     private static class TestException extends RuntimeException {

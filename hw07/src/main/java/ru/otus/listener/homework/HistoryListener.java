@@ -1,19 +1,21 @@
 package ru.otus.listener.homework;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 
 import ru.otus.listener.Listener;
 import ru.otus.model.Message;
+import ru.otus.model.ObjectForMessage;
 
 public class HistoryListener implements Listener, HistoryReader {
     List<Message> msgList = new ArrayList<>();
 
     @Override
     public void onUpdated(Message msg) {
-        msgList.add(msg);
+        var objectForMessage = new ObjectForMessage();
+        objectForMessage.setData(new ArrayList<>(msg.getField13().getData()));
+        var storedMsg = msg.toBuilder();
+        storedMsg.field13(objectForMessage);
+        msgList.add(storedMsg.build());
     }
 
     @Override
