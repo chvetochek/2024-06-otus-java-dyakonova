@@ -7,11 +7,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import ru.otus.listener.Listener;
 import ru.otus.model.Message;
@@ -94,22 +95,34 @@ class ComplexProcessorTest {
 
     @Test
     @DisplayName("Тестируем появление исключения в четную секунду")
-    void handleExceptionTestInSecond() throws InterruptedException {
+    void handleExceptionTestInEvenSecond() {
         // given
         var message = new Message.Builder(1L).field8("field8").build();
 
-        Processor processor1 = new ProcessorExceptional();
+        Processor processor1 = new ProcessorExceptional(() -> LocalDateTime.of(2024, 1, 1, 1, 30, 0));
 
         var processors = List.of(processor1);
 
         var complexProcessor = new ComplexProcessor(processors, ex -> {
             throw new TestException(ex.getMessage());
         });
-
-        if (System.currentTimeMillis()/1000 % 2 != 0) {
-            TimeUnit.SECONDS.sleep(1);
-        }
         assertThatExceptionOfType(TestException.class).isThrownBy(() -> complexProcessor.handle(message));
+    }
+
+    @Test
+    @DisplayName("Тестируем появление исключения в нечетную секунду")
+    void handleExceptionTestInOddSecond() {
+        // given
+        var message = new Message.Builder(1L).field8("field8").build();
+
+        Processor processor1 = new ProcessorExceptional(() -> LocalDateTime.of(2024, 1, 1, 1, 30, 1));
+
+        var processors = List.of(processor1);
+
+        var complexProcessor = new ComplexProcessor(processors, ex -> {
+            throw new TestException(ex.getMessage());
+        });
+        assertThatNoException().isThrownBy(() -> complexProcessor.handle(message));
     }
 
     private static class TestException extends RuntimeException {

@@ -8,6 +8,7 @@ import ru.otus.model.Message;
 import ru.otus.model.ObjectForMessage;
 import ru.otus.processor.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class HomeWork {
@@ -30,7 +31,7 @@ public class HomeWork {
           по аналогии с Demo.class
           из элеменов "to do" создать new ComplexProcessor и обработать сообщение
         */
-        var processors = List.of(new ProcessorExceptional(), new LoggerProcessor(new ProcessorReplace()));
+        var processors = List.of(new ProcessorExceptional(LocalDateTime::now), new LoggerProcessor(new ProcessorReplace()));
 
         var complexProcessor = new ComplexProcessor(processors, ex -> {});
         var listenerPrinter = new ListenerPrinterConsole();
