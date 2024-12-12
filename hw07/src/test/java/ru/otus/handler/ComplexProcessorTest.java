@@ -110,7 +110,7 @@ class ComplexProcessorTest {
     }
 
     @Test
-    @DisplayName("Тестируем появление исключения в нечетную секунду")
+    @DisplayName("Тестируем отсутствия исключения в нечетную секунду")
     void handleExceptionTestInOddSecond() {
         // given
         var message = new Message.Builder(1L).field8("field8").build();
