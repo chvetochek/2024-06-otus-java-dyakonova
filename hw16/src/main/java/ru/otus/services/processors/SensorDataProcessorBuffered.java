@@ -6,10 +6,8 @@ import ru.otus.api.SensorDataProcessor;
 import ru.otus.api.model.SensorData;
 import ru.otus.lib.SensorDataBufferedWriter;
 
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 // Этот класс нужно реализовать
 @SuppressWarnings({"java:S1068", "java:S125"})
@@ -18,8 +16,7 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
 
     private final int bufferSize;
     private final SensorDataBufferedWriter writer;
-    Queue<SensorData> dataBuffer = new ConcurrentLinkedQueue<>();
-    List<SensorData> bufferedData = new CopyOnWriteArrayList<>();
+    Set<SensorData> dataBuffer = new ConcurrentSkipListSet<>(Comparator.comparing(SensorData::getMeasurementTime));
 
     public SensorDataProcessorBuffered(int bufferSize, SensorDataBufferedWriter writer) {
         this.bufferSize = bufferSize;
@@ -27,22 +24,20 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
     }
 
     @Override
-    public void process(SensorData data) {
+    public synchronized void process(SensorData data) {
         dataBuffer.add(data);
-        bufferedData.add(data);
-        log.info("Обработка данных: {}", data);
         if (dataBuffer.size() >= bufferSize) {
-            log.info("Переполнение");
             flush();
         }
     }
 
-    public void flush() {
+    public synchronized void flush() {
         try {
-            writer.writeBufferedData(bufferedData);
-            bufferedData.clear();
+            if (dataBuffer.isEmpty()) {
+                return;
+            }
+            writer.writeBufferedData(dataBuffer.stream().toList());
             dataBuffer.clear();
-            log.info("Очистил данные");
         } catch (Exception e) {
             log.error("Ошибка в процессе записи буфера", e);
         }
