@@ -2,17 +2,23 @@ package ru.otus.jdbc.mapper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
-public class EntityClassMetaDataImpl implements EntityClassMetaData{
-    @Override
-    public String getName() {
-        return getClass().getName();
+public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T>{
+    Class<T> clazz;
+    public EntityClassMetaDataImpl(Class<T> clientClass) {
+        clazz = clientClass;
     }
 
     @Override
-    public Constructor getConstructor() throws NoSuchMethodException {
-        return getClass().getConstructor();
+    public String getName() {
+        return clazz.getSimpleName();
+    }
+
+    @Override
+    public Constructor<T> getConstructor() throws NoSuchMethodException {
+        return clazz.getConstructor();
     }
 
     @Override
@@ -27,7 +33,7 @@ public class EntityClassMetaDataImpl implements EntityClassMetaData{
 
     @Override
     public List<Field> getAllFields() {
-        return List.of(getClass().getDeclaredFields());
+        return new ArrayList<>(List.of(clazz.getDeclaredFields()));
     }
 
     @Override
