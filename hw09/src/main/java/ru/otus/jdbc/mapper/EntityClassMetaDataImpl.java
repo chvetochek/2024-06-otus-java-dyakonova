@@ -18,7 +18,12 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T>{
 
     @Override
     public Constructor<T> getConstructor() throws NoSuchMethodException {
-        return clazz.getConstructor();
+        var fields = getAllFields();
+        Class<?>[] parameterTypes = new Class[fields.size()];
+        for (int i = 0; i < fields.size(); i++) {
+            parameterTypes[i] = fields.get(i).getType();
+        }
+        return clazz.getConstructor(parameterTypes);
     }
 
     @Override

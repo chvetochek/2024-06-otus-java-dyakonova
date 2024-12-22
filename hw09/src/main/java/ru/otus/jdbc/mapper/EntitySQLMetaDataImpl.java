@@ -1,14 +1,12 @@
 package ru.otus.jdbc.mapper;
 
-import ru.otus.crm.model.Client;
-
 import java.lang.reflect.Field;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EntitySQLMetaDataImpl implements EntitySQLMetaData{
-    EntityClassMetaData<Client> entityClassMetaDataClient;
-    public EntitySQLMetaDataImpl(EntityClassMetaData<Client> entityClassMetaDataClient) {
+public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData{
+    EntityClassMetaData<T> entityClassMetaDataClient;
+    public EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaDataClient) {
         this.entityClassMetaDataClient = entityClassMetaDataClient;
     }
 
