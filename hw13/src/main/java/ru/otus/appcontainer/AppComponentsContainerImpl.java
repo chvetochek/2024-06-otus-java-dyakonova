@@ -22,11 +22,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private void processConfig(Class<?> configClass) {
         checkConfigClass(configClass);
         // You code here...
-        var allFields = configClass.getDeclaredAnnotation(AppComponentsContainerConfig.class).getClass().getDeclaredFields();
-        for (var field : allFields) {
-            if (field.isAnnotationPresent(AppComponent.class)) {
-                appComponents.add(field);
-                appComponentsByName.put(field.getName(), field);
+        var allMethods = configClass.getDeclaredMethods();
+        for (var method : allMethods) {
+            if (method.isAnnotationPresent(AppComponent.class)) {
+                appComponents.add(method);
+                appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), method);
             }
         }
     }
@@ -39,7 +39,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
-        return (C) appComponentsByName.get(componentClass.getName());
+        return (C) appComponents.get();
     }
 
     @Override
