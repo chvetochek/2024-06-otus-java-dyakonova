@@ -1,9 +1,7 @@
 package ru.otus.appcontainer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
@@ -22,11 +20,28 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private void processConfig(Class<?> configClass) {
         checkConfigClass(configClass);
         // You code here...
-        var allMethods = configClass.getDeclaredMethods();
+        var allMethods = Arrays.stream(configClass.getDeclaredMethods()).sorted(Comparator.comparing(method -> method.getAnnotation(AppComponent.class).order())).toList();
         for (var method : allMethods) {
             if (method.isAnnotationPresent(AppComponent.class)) {
-                appComponents.add(method);
-                appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), method);
+                var compName = method.getAnnotation(AppComponent.class).name();
+                if (appComponentsByName.containsKey(compName)) {
+                    throw new RuntimeException("Компонентт с таким именем уже существует: " + compName);
+                }
+                Object component = null;
+                try {
+                    var paramTypes = method.getParameterTypes();
+                    var args = new ArrayList<>();
+                    for (var parameterType : paramTypes) {
+                        var appComponent = getAppComponent(parameterType);
+                        args.add(appComponent);
+                    }
+
+                    component = method.invoke(configClass.getDeclaredConstructor().newInstance(), args.toArray());
+                } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+                appComponents.add(component);
+                appComponentsByName.put(compName, method);
             }
         }
     }
@@ -39,11 +54,20 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
-        return (C) appComponents.get();
+        for (var appComponent : appComponents) {
+            if (componentClass.isAssignableFrom(appComponent.getClass())) {
+                return (C) appComponent;
+            }
+        }
+        throw new RuntimeException("Не найдено нужного компонента");
     }
 
     @Override
     public <C> C getAppComponent(String componentName) {
-        return (C) appComponentsByName.get(componentName);
+        var comp = appComponentsByName.get(componentName);
+        if (comp == null) {
+            throw new RuntimeException("Компонентт с таким именем не найден: " + componentName);
+        }
+        return (C) comp;
     }
 }
