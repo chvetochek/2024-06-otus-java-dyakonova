@@ -1,11 +1,11 @@
 package ru.otus.appcontainer;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 @SuppressWarnings("squid:S1068")
 public class AppComponentsContainerImpl implements AppComponentsContainer {
@@ -28,20 +28,18 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                     throw new RuntimeException("Компонентт с таким именем уже существует: " + compName);
                 }
                 Object component = null;
+                var paramTypes = method.getParameterTypes();
+                var args = Arrays.stream(paramTypes)
+                        .map(this::getAppComponent)
+                        .toArray();
                 try {
-                    var paramTypes = method.getParameterTypes();
-                    var args = new ArrayList<>();
-                    for (var parameterType : paramTypes) {
-                        var appComponent = getAppComponent(parameterType);
-                        args.add(appComponent);
-                    }
-
-                    component = method.invoke(configClass.getDeclaredConstructor().newInstance(), args.toArray());
-                } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
+                    component = method.invoke(configClass.getDeclaredConstructor().newInstance(), args);
+                } catch (IllegalAccessException | InvocationTargetException | InstantiationException |
+                         NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
                 appComponents.add(component);
-                appComponentsByName.put(compName, method);
+                appComponentsByName.put(compName, component);
             }
         }
     }
