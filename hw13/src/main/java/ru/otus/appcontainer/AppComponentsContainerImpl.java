@@ -27,7 +27,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 if (appComponentsByName.containsKey(compName)) {
                     throw new RuntimeException("Компонентт с таким именем уже существует: " + compName);
                 }
-                Object component = null;
+                Object component;
                 var paramTypes = method.getParameterTypes();
                 var args = Arrays.stream(paramTypes)
                         .map(this::getAppComponent)
@@ -52,13 +52,21 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
+        C component = null;
         for (var appComponent : appComponents) {
             if (componentClass.isAssignableFrom(appComponent.getClass())) {
-                return (C) appComponent;
+                if (component != null) {
+                    throw new RuntimeException("Дубликат");
+                }
+                component = (C) appComponent;
             }
         }
-        throw new RuntimeException("Не найдено нужного компонента");
+        if (component == null) {
+            throw new RuntimeException("Не найдено нужного компонента");
+        }
+        return component;
     }
+
 
     @Override
     public <C> C getAppComponent(String componentName) {
