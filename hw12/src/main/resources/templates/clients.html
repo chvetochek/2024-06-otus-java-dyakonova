@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Клиенты</title>
+</head>
+
+<body>
+<h4>Создать нового клиента</h4>
+<form method="POST">
+    <input type="text" name="clientNameTextBox" value="Ekaterina" placeholder="Введите имя клиента">
+    <input type="text" name="clientAddressTextBox" value="Moscow" placeholder="Введите адрес клиента">
+    <input type="text" name="clientPhoneTextBox" value="333" placeholder="Введите телефон клиента">
+    <input type="submit" value="Создать">
+</form>
+
+<h4>Список клиентов</h4>
+<table style="width: 400px">
+    <thead>
+    <tr>
+        <td style="width: 50px">Id</td>
+        <td style="width: 150px">Имя</td>
+        <td style="width: 100px">Адрес</td>
+        <td style="width: 100px">Телефон</td>
+    </tr>
+    </thead>
+    <tbody>
+    <#if clients?? && (clients?size > 0)>
+    <#list clients as client>
+    <tr>
+        <td>${client.id}</td>
+        <td>${client.name}</td>
+            <#if client?? && client.address??>
+            <#assign address = client.address.street>
+        <td>${address}</td>
+        <#else>
+        <td>Нет адреса</td>
+    </#if>
+        <td>
+                <#list client.phones as phone>
+               ${phone.number?default("Нет телефона")}<#if phone_has_next>, </#if>
+            </#list>
+
+        </td>
+    </tr>
+    </#list>
+    <#else>
+    <tr>
+        <td colspan="2">Клиентов не найдено</td>
+    </tr>
+</#if>
+</tbody>
+</table>
+</body>
+</html>
