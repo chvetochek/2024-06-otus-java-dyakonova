@@ -1,0 +1,36 @@
+package ru.otus.domain;
+
+import jakarta.annotation.Nonnull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Getter
+@Setter
+@Table("phone")
+public class Phone {
+    @Id
+    @Column("id")
+    private final Long id;
+
+    @Nonnull
+    @Column("number")
+    private final String number;
+
+    @Nonnull
+    @Column("client_id")
+    private Long clientId;
+
+    public Phone(Long id, @Nonnull String number) {
+        this.id = id;
+        this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return "Phone{" + "id=" + id + ", number='" + number + '\'' + '}';
+    }
+}
