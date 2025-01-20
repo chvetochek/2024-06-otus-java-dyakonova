@@ -6,11 +6,17 @@
 
 <body>
 <h4>Создать нового клиента</h4>
-<form method="POST" th:action="@{/client/save}">
-    <input type="text" name="clientNameTextBox" value="Ekaterina" placeholder="Введите имя клиента" th:field="*{name}">
-    <input type="text" name="clientAddressTextBox" value="Moscow" placeholder="Введите адрес клиента" th:field="*{address}">
-    <input type="text" name="clientPhoneTextBox" value="333" placeholder="Введите телефон клиента" th:field="*{phone}">
-    <input type="submit" value="Создать">
+<form method="POST" th:action="@{/client/save}" th:object="${newclient}">
+    <div>
+        <label for="name">Имя:</label>
+        <input type="text" id="name" th:field="*{name}" required />
+    </div>
+    <div>
+        <label for="street">Адрес:</label>
+        <input type="text" id="street" th:field="*{address.street}" />
+    </div>
+<!--    <input type="text" name="clientPhoneTextBox" value="333" placeholder="Введите телефон клиента" th:field="*{phone}">-->
+    <input type="submit" value="Создать клиента">
 </form>
 
 <h4>Список клиентов</h4>
@@ -29,10 +35,9 @@
         <td th:text="${client.name}">Имя</td>
         <td>
             <span th:if="${client.address != null}" th:text="${client.address.street}">Нет адреса</span>
-            <span th:unless="${client.address != null}">Нет адреса</span>
         </td>
         <td>
-            <span th:each="phone : ${client.phones}" th:text="${phone.number} + (phone.hasNext() ? ', ' : '')">Нет телефона</span>
+<!--            <span th:each="phone : ${client.phones}" th:text="${phone.number} + (phone.hasNext() ? ', ' : '')">Нет телефона</span>-->
         </td>
     </tr>
     <tr th:if="${#lists.isEmpty(clients)}">

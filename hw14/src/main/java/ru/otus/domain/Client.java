@@ -9,8 +9,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,10 +22,11 @@ public class Client implements Cloneable {
     @Nonnull
     private String name;
 
-    private Long addressId;
+    @MappedCollection(idColumn = "id")
+    private Address address;
 
-    @MappedCollection(idColumn = "client_id")
-    private List<Phone> phones;
+//    @MappedCollection(idColumn = "client_id")
+//    private List<Phone> phones;
 
     public Client(String name) {
         this.id = null;
@@ -39,21 +38,22 @@ public class Client implements Cloneable {
         this.name = name;
     }
 
-    public Client(Long id, String name, Long addressId, List<Phone> phones) {
+    public Client(Long id, String name, Address address) {
         this.id = id;
         this.name = name;
-        this.addressId = addressId;
-        this.phones = phones;
+        this.address = address;
+
+        //this.phones = phones;
     }
 
     @Override
     @SuppressWarnings({"java:S2975", "java:S1182"})
     public Client clone() {
-        return new Client(this.id, this.name, this.addressId, this.phones);
+        return new Client(this.id, this.name, this.address);
     }
 
     @Override
     public String toString() {
-        return "Client{" + "id=" + id + ", name='" + name + '\'' + ", addressId='" + addressId + '\'' + ", phones=" + phones + '}';
+        return "Client{" + "id=" + id + ", name='" + name + '\'' + ", address='" + address + '\'' + ", phones=" +  + '}';
     }
 }

@@ -23,6 +23,7 @@ public class ClientController {
     @GetMapping({"/", "/client/list"})
     public String clientsListView(Model model) {
         List<Client> clients = clientService.findAll();
+        model.addAttribute("newclient", new Client());
         model.addAttribute("clients", clients);
         //return "clientsList";
         return "index";
