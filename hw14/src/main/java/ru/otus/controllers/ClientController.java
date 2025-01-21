@@ -1,13 +1,12 @@
 package ru.otus.controllers;
 
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.otus.domain.Client;
+import ru.otus.domain.Phone;
 import ru.otus.services.ClientService;
 
 @Controller
@@ -22,17 +21,13 @@ public class ClientController {
 
     @GetMapping({"/", "/client/list"})
     public String clientsListView(Model model) {
-        List<Client> clients = clientService.findAll();
-        model.addAttribute("newclient", new Client());
-        model.addAttribute("clients", clients);
-        //return "clientsList";
-        return "index";
-    }
+        var newClient = new Client();
+        newClient.getPhones().add(new Phone());
+        model.addAttribute("newclient", newClient);
 
-    @GetMapping("/client/create")
-    public String clientCreateView(Model model) {
-        model.addAttribute("client", new Client());
-        return "clientCreate";
+        var clients = clientService.findAll();
+        model.addAttribute("clients", clients);
+        return "index";
     }
 
     @PostMapping("/client/save")

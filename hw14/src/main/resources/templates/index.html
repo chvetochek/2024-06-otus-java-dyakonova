@@ -15,7 +15,10 @@
         <label for="street">Адрес:</label>
         <input type="text" id="street" th:field="*{address.street}" />
     </div>
-<!--    <input type="text" name="clientPhoneTextBox" value="333" placeholder="Введите телефон клиента" th:field="*{phone}">-->
+    <div>
+        <label for="phone">Телефон:</label>
+        <input type="text" id="phone" th:field="*{phones[0].number}" required/>
+    </div>
     <input type="submit" value="Создать клиента">
 </form>
 
@@ -37,7 +40,13 @@
             <span th:if="${client.address != null}" th:text="${client.address.street}">Нет адреса</span>
         </td>
         <td>
-<!--            <span th:each="phone : ${client.phones}" th:text="${phone.number} + (phone.hasNext() ? ', ' : '')">Нет телефона</span>-->
+            <span th:if="${client.phones != null and client.phones.size() > 0}">
+                <span th:each="phone, iterStat : ${client.phones}">
+                    <span th:text="${phone.number}"></span>
+                    <span th:if="${!iterStat.last}">,</span>
+                </span>
+            </span>
+            <span th:if="${client.phones == null or client.phones.size() == 0}">Нет телефона</span>
         </td>
     </tr>
     <tr th:if="${#lists.isEmpty(clients)}">
