@@ -5,15 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -22,24 +18,28 @@ import java.util.Set;
 public class Client implements Cloneable {
 
     @Id
-    @Column("id")
+    @Nonnull
     private Long id;
 
     @Nonnull
     private String name;
 
-    @MappedCollection(idColumn = "id")
+    @MappedCollection(idColumn = "client_id")
     private Address address;
 
     @MappedCollection(idColumn = "client_id", keyColumn = "id")
     private List<Phone> phones = new ArrayList<>();
 
-    @PersistenceCreator
     public Client(Long id, String name, Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.phones = phones;
+        if (phones != null) {
+            for (Phone phone : phones) {
+                phone.setClientId(id);
+            }
+        }
     }
 
     @Override
