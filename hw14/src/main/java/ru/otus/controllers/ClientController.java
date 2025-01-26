@@ -23,7 +23,7 @@ public class ClientController {
     @GetMapping({"/", "/client/list"})
     public String clientsListView(Model model) {
         var newClient = new Client();
-        //newClient.getPhones().add(new Phone());
+        newClient.getPhones().add(new Phone());
         model.addAttribute("newclient", newClient);
 
 
@@ -35,6 +35,11 @@ public class ClientController {
     @PostMapping("/client/save")
     public RedirectView clientSave(@ModelAttribute Client client) {
         clientService.saveClient(client);
+//        if (client.getPhones() != null) {
+//            for (Phone phone : client.getPhones()) {
+//                phone.setClientId(client.getId());
+//            }
+//        }
         System.out.println("Client saved successfully: "+ client);
         return new RedirectView("/", true);
     }
