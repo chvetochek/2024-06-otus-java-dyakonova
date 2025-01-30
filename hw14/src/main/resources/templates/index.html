@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Клиенты</title>
+</head>
+
+<body>
+<h4>Создать нового клиента</h4>
+<form method="POST" th:action="@{/client/save}" th:object="${newclient}">
+    <div>
+        <label for="name">Имя:</label>
+        <input type="text" id="name" th:field="*{name}" required />
+    </div>
+    <div>
+        <label for="street">Адрес:</label>
+        <input type="text" id="street" th:field="*{address.street}" />
+    </div>
+    <div>
+        <label for="phone">Телефон:</label>
+        <input type="text" id="phone" name="phoneNumber" required/>
+    </div>
+    <input type="submit" value="Создать клиента">
+</form>
+
+<h4>Список клиентов</h4>
+<table style="width: 400px">
+    <thead>
+    <tr>
+        <td style="width: 50px">Id</td>
+        <td style="width: 150px">Имя</td>
+        <td style="width: 100px">Адрес</td>
+        <td style="width: 100px">Телефон</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="client : ${clients}">
+        <td th:text="${client.id}">Id</td>
+        <td th:text="${client.name}">Имя</td>
+        <td>
+            <span th:if="${client.address != null}" th:text="${client.address.street}">Нет адреса</span>
+        </td>
+        <td>
+            <span th:if="${client.phones != null and client.phones.size() > 0}">
+                <span th:each="phone, iterStat : ${client.phones}">
+                    <span th:text="${phone.number}"></span>
+                    <span th:if="${!iterStat.last}">,</span>
+                </span>
+            </span>
+            <span th:if="${client.phones == null or client.phones.size() == 0}">Нет телефона</span>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(clients)}">
+        <td colspan="4">Клиентов не найдено</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
