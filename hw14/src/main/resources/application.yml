@@ -10,3 +10,13 @@ spring:
 logging:
   level:
     org.springframework.jdbc.core.JdbcTemplate: TRACE
+
+    org:
+      springframework:
+        jdbc:
+          core:
+            StatementCreatorUtils: TRACE
+      hibernate:
+        orm:
+          jdbc:
+            bind: TRACE

@@ -8,8 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,19 +27,14 @@ public class Client implements Cloneable {
     @MappedCollection(idColumn = "client_id")
     private Address address;
 
-    @MappedCollection(idColumn = "client_id", keyColumn = "id")
-    private List<Phone> phones = new ArrayList<>();
+    @MappedCollection(idColumn = "client_id")
+    private Set<Phone> phones = new HashSet<>();
 
-    public Client(Long id, String name, Address address, List<Phone> phones) {
+    public Client(Long id, String name, Address address, Set<Phone> phones) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.phones = phones;
-        if (phones != null) {
-            for (Phone phone : phones) {
-                phone.setClientId(id);
-            }
-        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.otus.domain.Client;
 import ru.otus.domain.Phone;
@@ -23,7 +24,6 @@ public class ClientController {
     @GetMapping({"/", "/client/list"})
     public String clientsListView(Model model) {
         var newClient = new Client();
-        newClient.getPhones().add(new Phone());
         model.addAttribute("newclient", newClient);
 
 
@@ -33,13 +33,11 @@ public class ClientController {
     }
 
     @PostMapping("/client/save")
-    public RedirectView clientSave(@ModelAttribute Client client) {
+    public RedirectView clientSave(@ModelAttribute Client client, @RequestParam String phoneNumber) {
+        Phone newPhone = new Phone();
+        newPhone.setNumber(phoneNumber);
+        client.getPhones().add(newPhone);
         clientService.saveClient(client);
-//        if (client.getPhones() != null) {
-//            for (Phone phone : client.getPhones()) {
-//                phone.setClientId(client.getId());
-//            }
-//        }
         System.out.println("Client saved successfully: "+ client);
         return new RedirectView("/", true);
     }
